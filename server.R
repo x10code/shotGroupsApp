@@ -1,5 +1,4 @@
 ## TODO
-## push to github
 ## compareGroups() -> overflow with horizontal scrollbar
 ## full info for compare groups
 ## or compare groups separately for shape, spread, location

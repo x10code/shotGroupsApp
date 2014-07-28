@@ -393,7 +393,9 @@ shinyUI(fluidPage(
                        a("Ballistipedia", href="http://ballistipedia.com/"), "."),
                     p("shotGroups and this web application are written by:", br(),
                       "Daniel", HTML("Wollschl&auml;ger"),
-                      a("<dwoll@kuci.org>", href="mailto:dwoll@kuci.org")),
+                      a("<dwoll@kuci.org>", href="mailto:dwoll@kuci.org"), br(),
+                      a("http://github.com/dwoll/shotGroupsApp/",
+                        href="http://github.com/dwoll/shotGroupsApp/"), "- source code"),
 
                     h6("Acknowledgements"),
                     p("Thanks to David Bookstaber for testing, feedback and data."),

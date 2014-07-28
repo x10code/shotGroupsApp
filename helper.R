@@ -107,7 +107,7 @@ targetL    <- setNames(targetL, c("none", names(targets)))
 targetLinv <- as.list(c(NA, names(targets)))
 targetLinv <- setNames(targetLinv, c(1, seq_along(targets)+1))
 
-## function to extract group names and make the an option set
+## function to extract group names and make them an option set
 getGroups <- function(x, choices=FALSE) {
     x       <- droplevels(x)
     groups  <- levels(x$series)
