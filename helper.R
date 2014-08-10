@@ -124,8 +124,8 @@ getGroups <- function(x, choices=FALSE) {
 ## output components that need a CI / CEP / confidence level
 #####---------------------------------------------------------------------------
 
-levelOutComps <- c("sigmaCI", "CEP", "sdXci", "sdYci", "RSDci", "MRci",
-                   "confEll", "confEllRob", "ctrXci", "ctrYci")
+levelOutComps <- c("sigmaCI", "sigmaMRci", "CEP", "sdXci", "sdYci", "RSDci",
+                   "MRci", "confEll", "confEllRob", "ctrXci", "ctrYci")
 
 #####---------------------------------------------------------------------------
 ## function to write list to tab-delimited text file

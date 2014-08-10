@@ -1,4 +1,6 @@
 ## TODO
+## CI info in dist to ctr plot
+## CI info for sigmaMRci
 ## compareGroups() -> overflow with horizontal scrollbar
 ## full info for compare groups
 ## or compare groups separately for shape, spread, location
