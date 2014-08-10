@@ -7,11 +7,11 @@ shinyUI(fluidPage(
     #theme="bootstrap.css",
     titlePanel("Analyze shooting results using shotGroups"),
     sidebarLayout(
-        #####---------------------------------------------------------------------------
+        #####-------------------------------------------------------------------
         ## sidebar
-        #####---------------------------------------------------------------------------
+        #####-------------------------------------------------------------------
         sidebarPanel(width=3,
-           #####---------------------------------------------------------------------------
+           #####----------------------------------------------------------------
            ## data input
            conditionalPanel(condition="input.task == 'Data'",
                 h4("Enter data"),
@@ -36,7 +36,7 @@ shinyUI(fluidPage(
                 actionButton("applyData", "Apply")
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## group shape
             conditionalPanel(condition="input.task == 'Shape'",
                 h4("Group shape"),
@@ -47,7 +47,7 @@ shinyUI(fluidPage(
                                   "PCA"=2))
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## group spread / precision
             conditionalPanel(condition="input.task == 'Precision'",
                 h4("Precision"),
@@ -59,7 +59,7 @@ shinyUI(fluidPage(
                                    choices=CItypes, selected=c(1, 3))
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## group location / accuracy
             conditionalPanel(condition="input.task == 'Accuracy'",
                 h4("Accuracy"),
@@ -69,7 +69,7 @@ shinyUI(fluidPage(
                                    choices=CItypes, selected=c(1, 3))
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## compare groups
             conditionalPanel(condition="input.task == 'Compare groups'",
                 h4("Compare groups"),
@@ -81,7 +81,7 @@ shinyUI(fluidPage(
                 checkboxInput("cmpXYTL", "XY-origin top-left", TRUE)
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## hit probability
             conditionalPanel(condition="input.task == 'Hit probability'",
                 h4("Hit probability"),
@@ -105,7 +105,7 @@ shinyUI(fluidPage(
                 checkboxInput("hitpDoRob", label=h5("Robust estimate"), FALSE)
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## target plot
             conditionalPanel(condition="input.task == 'Target plot'",
                 h4("Target plot"),
@@ -133,7 +133,7 @@ shinyUI(fluidPage(
                             choices=unitsPlot, selected=3)
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## angular size
             conditionalPanel(condition="input.task == 'Angular size'",
                 h4("Angular size"),
@@ -174,13 +174,13 @@ shinyUI(fluidPage(
                                              choices=unitsAbs, selected=1))
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## about
             conditionalPanel(condition="input.task == 'About'",
                 h4("Background information")
             ),
 
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## file information on bottom of sidebar
             conditionalPanel(condition="(input.task != 'About') && (input.task != 'Angular size') && (input.task != 'Data')",
                 h5("Loaded data"),
@@ -188,17 +188,17 @@ shinyUI(fluidPage(
             )
         ),
 
-        #####---------------------------------------------------------------------------
+        #####-------------------------------------------------------------------
         ## main output area
-        #####---------------------------------------------------------------------------
+        #####-------------------------------------------------------------------
         mainPanel(
             #tags$head(tags$style(type="text/css", ".container-fluid { max-width: 12600px; }")),
-            #####---------------------------------------------------------------------------
+            #####---------------------------------------------------------------
             ## distance to target, unit distance, unit xy-coords
             conditionalPanel(condition="(input.task != 'About') && !((input.task == 'Angular size') && input.angszeType == '3')",
                              uiOutput("unitDstXY")),
             tabsetPanel(
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## data input
                 tabPanel("Data",
                     h6("Information from imported file(s)"),
@@ -218,7 +218,7 @@ shinyUI(fluidPage(
                       "section 2.1")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## group shape
                 tabPanel("Shape",
                     h6("Group shape"),
@@ -238,7 +238,7 @@ shinyUI(fluidPage(
                     uiOutput("shapePlot")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## group spread / precision
                 tabPanel("Precision",
                     h6("Precision"),
@@ -258,7 +258,7 @@ shinyUI(fluidPage(
                     uiOutput("spreadPlot")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## group location / accuracy
                 tabPanel("Accuracy",
                     h6("Accuracy"),
@@ -278,7 +278,7 @@ shinyUI(fluidPage(
                     plotOutput("locationPlot", height="500px")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## compare groups
                 tabPanel("Compare groups",
                     h6("Compare groups"),
@@ -296,7 +296,7 @@ shinyUI(fluidPage(
                     uiOutput("comparePlot")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## hit probability
                 tabPanel("Hit probability",
                     h6("Circular Error Probable"),
@@ -331,7 +331,7 @@ shinyUI(fluidPage(
                     verbatimTextOutput("hitProbExtra")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####------------------------------------------------------------
                 ## target plot
                 tabPanel("Target plot",
                     h6("Target plot"),
@@ -355,7 +355,7 @@ shinyUI(fluidPage(
                     verbatimTextOutput("simRingCount")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## angular size
                 tabPanel("Angular size",
                     h6("Convert between absolute and angular size"),
@@ -372,7 +372,7 @@ shinyUI(fluidPage(
                     verbatimTextOutput("size")
                 ),
 
-                #####---------------------------------------------------------------------------
+                #####-----------------------------------------------------------
                 ## about
                 tabPanel("About",
                     h6("About shotGroups"),

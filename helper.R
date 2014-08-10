@@ -6,7 +6,7 @@ library(shotGroups)
 
 nShapePlots   <- 7
 nSpreadPlots  <- 3
-nComparePlots <- 3
+nComparePlots <- 4
 
 #####---------------------------------------------------------------------------
 ## option sets and their respective inverse
@@ -81,26 +81,26 @@ compOut2 <- c("center"="1", "dist POA"="2", "MANOVA"="3", "cor XY"="4", "sd XY"=
               "sd XY CI"="6", "mean dist to center"="7", "max spread"="8",
               "bound box fig of merit"="9",
               "bound box diagonal"="10", "min circle radius"="11", "sigma"="12",
-              "sigma CI"="13", "CEP"="14", "AnsariX"="15",
-              "AnsariY"="16", "Wilcoxon"="17")
+              "MR"="13", "sigma + MR CI"="14", "CEP"="15", "AnsariX"="16",
+              "AnsariY"="17", "Wilcoxon"="18")
 
 compOut2Inv <- c("1"="ctr", "2"="distPOA", "3"="MANOVA", "4"="corXY", "5"="sdXY",
                  "6"="sdXYci", "7"="meanDistToCtr", "8"="maxPairDist", "9"="bbFoM",
-                 "10"="bbDiag", "11"="minCircleRad", "12"="sigma", "13"="sigmaCI",
-                 "14"="CEP", "15"="AnsariX",
-                 "16"="AnsariY", "17"="Wilcoxon")
+                 "10"="bbDiag", "11"="minCircleRad", "12"="sigma", "13"="MR",
+                 "14"="sigmaMRci", "15"="CEP", "16"="AnsariX",
+                 "17"="AnsariY", "18"="Wilcoxon")
 
 compOut3plus <- c("ctr"="1", "distPOA"="2", "MANOVA"="3", "corXY"="4", "sdXY"="5",
                   "sdXYci"="6", "meanDistToCtr"="7", "maxPairDist"="8", "bbFoM"="9",
-                  "bbDiag"="10", "minCircleRad"="11", "sigma"="12", "sigmaCI"="13",
-                  "CEP"="14", "FlignerX"="15",
-                  "FlignerY"="16", "Kruskal"="17")
+                  "bbDiag"="10", "minCircleRad"="11", "sigma"="12", "MR"="13",
+                  "sigmaCI"="14", "CEP"="15", "FlignerX"="16",
+                  "FlignerY"="17", "Kruskal"="18")
 
 compOut3plusInv <- c("1"="ctr", "2"="distPOA", "3"="MANOVA", "4"="corXY", "5"="sdXY",
                      "6"="sdXYci", "7"="meanDistToCtr", "8"="maxPairDist", "9"="bbFoM",
-                     "10"="bbDiag", "11"="minCircleRad", "12"="sigma", "13"="sigmaCI",
-                     "14"="CEP", "15"="FlignerX",
-                     "16"="FlignerY", "17"="Kruskal")
+                     "10"="bbDiag", "11"="minCircleRad", "12"="sigma", "13"="MR",
+                     "14"="sigmaMRci", "15"="CEP", "16"="FlignerX",
+                     "17"="FlignerY", "18"="Kruskal")
 
 targetL    <- as.list(c(1, seq_along(targets)+1))
 targetL    <- setNames(targetL, c("none", names(targets)))

@@ -12,9 +12,9 @@ library(shotGroups)
 source("helper.R")
 
 shinyServer(function(input, output) {
-    #####---------------------------------------------------------------------------
+    #####-----------------------------------------------------------------------
     ## provide the data - reactive conductor
-    #####---------------------------------------------------------------------------
+    #####-----------------------------------------------------------------------
     coords <- reactive({
         ## only change when explicitly applied
         input$applyData
@@ -481,9 +481,9 @@ shinyServer(function(input, output) {
         contentType='application/pdf' # MIME type
     )
 
-    #####---------------------------------------------------------------------------
+    #####-----------------------------------------------------------------------
     ## compare groups
-    #####---------------------------------------------------------------------------
+    #####-----------------------------------------------------------------------
     ## output list - reactive conductor
     output$compGroups <- renderUI({
         xy <- coords()
@@ -511,7 +511,7 @@ shinyServer(function(input, output) {
             selectizeInput("compareOut", label=h5("Select the output elements you want to see"),
                            choices=compChoices, multiple=TRUE,
                            selected=c("1", "2", "5", "8", "9", "10",
-                                      "12", "13", "14"), width="100%")
+                                      "12", "14", "15"), width="100%")
 #         } else {
 #             NULL
 #         }
