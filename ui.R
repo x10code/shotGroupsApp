@@ -26,7 +26,7 @@ shinyUI(fluidPage(
                                  radioButtons("fileType", "File format:",
                                               list("OnTarget 1.*"=1,
                                                    "OnTarget 2.*, 3.*"=2,
-                                                   "Other"=3))),
+                                                   "Other"=3), selected="2")),
                 conditionalPanel(condition="input.datIn == '2'",
                                  h5("Upload file: "),
                                  fileInput("fileUpload", "Select file:", multiple=TRUE)),
