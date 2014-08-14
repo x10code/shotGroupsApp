@@ -890,12 +890,29 @@ shinyServer(function(input, output) {
         unitAngOut  <- unitsAngInv[input$angszeUnitAngOut]
         unitDstOut  <- unitsAbsInv[input$angszeUnitDstOut]
 
+        getMOAmult <- function(uao) {
+            getMOA(szeAbs1, dst=dstTrgt,
+                   conversion=paste0(unitDstTrgt, "2", unitAbs1, collapse=""),
+                   type=uao)
+        }
+
+        fromMOAmult <- function(uao) {
+            fromMOA(szeAng1, dst=dstTrgt,
+                    conversion=paste0(unitDstTrgt, "2", uao, collapse=""),
+                    type=unitAng1)
+        }
+
+        getDistMult <- function(udo) {
+            getDistance(szeAbs2,
+                        angular=szeAng2,
+                        conversion=paste0(udo, "2", unitAbs2),
+                        type=unitAng2)
+        }
+
         if(input$angszeType == "1") {
             ## absolute size -> angular size
-            value <- getMOA(szeAbs1, dst=dstTrgt,
-                            conversion=paste0(unitDstTrgt, "2", unitAbs1, collapse=""),
-                            type=unitAngOut)
-            x     <- data.frame("ang size"=value)
+            values <- Map(getMOAmult, unitAngOut)
+            x <- setNames(as.data.frame(values), paste("angSize", unitAngOut, sep="_"))
             if(!any(is.na(szeAbs1)) && !any(duplicated(szeAbs1))) {
                 rownames(x) <- szeAbs1
             } else {
@@ -903,10 +920,8 @@ shinyServer(function(input, output) {
             }
         } else if(input$angszeType == "2") {
             ## angular size -> absolute size
-            value <- fromMOA(szeAng1, dst=dstTrgt,
-                             conversion=paste0(unitDstTrgt, "2", unitAbsOut, collapse=""),
-                             type=unitAng1)
-            x     <- data.frame("abs size"=value)
+            values <- Map(fromMOAmult, unitAbsOut)
+            x <- setNames(as.data.frame(values), paste("absSize", unitAbsOut, sep="_"))
             if(!any(is.na(szeAng1)) && !any(duplicated(szeAng1))) {
                 rownames(x) <- szeAng1
             } else {
@@ -914,11 +929,8 @@ shinyServer(function(input, output) {
             }
         } else if(input$angszeType == "3") {
             ## absolute size + angular size -> distance
-            value <- getDistance(szeAbs2,
-                                 angular=szeAng2,
-                                 conversion=paste0(unitDstOut, "2", unitAbs2),
-                                 type=unitAng2)
-            x      <- data.frame("distance"=value)
+            values <- Map(getDistMult, unitDstOut)
+            x <- setNames(as.data.frame(values), paste("dist", unitDstOut, sep="_"))
             rNames <- paste0(szeAbs2, "_", szeAng2)
             if(!any(is.na(szeAbs2) | is.na(szeAng2)) && !any(duplicated(rNames))) {
                 rownames(x) <- rNames

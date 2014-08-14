@@ -27,13 +27,13 @@ unitsXYInv  <- c("1"="cm", "2"="mm", "3"="in")
 unitsAbs    <- c("m"="1", "cm"="2", "mm"="3", "yard"="4", "feet"="5", "inch"="6")
 unitsAbsInv <- c("1"="m", "2"="cm", "3"="mm", "4"="yd", "5"="ft", "6"="in")
 
-unitsAng    <- c("MOA"="1", "SMOA"="2", "milrad"="3")
-unitsAngInv <- c("1"="MOA", "2"="SMOA", "3"="milrad")
+unitsAng    <- c("MOA"="1", "SMOA"="2", "mrad"="3", "NATO mil"="4")
+unitsAngInv <- c("1"="MOA", "2"="SMOA", "3"="mrad", "4"="mil")
 
-unitsPlot    <- c("cm"="1", "mm"="2", "in"="3", "MOA"="4", "SMOA"="5", "milrad"="6")
-unitsPlotInv <- c("1"="cm", "2"="mm", "3"="in", "4"="MOA", "5"="SMOA", "6"="milrad")
+unitsPlot    <- c("cm"="1", "mm"="2", "in"="3", "MOA"="4", "SMOA"="5", "milliradian"="6", "NATO mil"="7")
+unitsPlotInv <- c("1"="cm", "2"="mm", "3"="in", "4"="MOA", "5"="SMOA", "6"="mrad", "7"="mil")
 
-hitpRUnits   <- c('same as xy-coords', 'm', 'cm', 'mm', 'yd', 'ft', 'in', 'MOA', 'SMOA', 'milrad')
+hitpRUnits   <- c('same as xy-coords', 'm', 'cm', 'mm', 'yd', 'ft', 'in', 'MOA', 'SMOA', 'mrad', 'mil')
 hitpRUnit    <- as.list(seq_along(hitpRUnits))
 hitpRUnit    <- setNames(hitpRUnit, hitpRUnits)
 hitpRUnitInv <- as.list(c("unit", hitpRUnits[-1]))

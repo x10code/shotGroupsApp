@@ -149,8 +149,8 @@ shinyUI(fluidPage(
                                  selectInput("angszeUnitAbs1", h5("Unit absolute size"),
                                              choices=unitsAbs, selected=2),
                                  h4("Output"),
-                                 selectInput("angszeUnitAngOut", h5("Unit angular size"),
-                                             choices=unitsAng, selected=1)),
+                                 selectizeInput("angszeUnitAngOut", h5("Unit angular size"),
+                                                choices=unitsAng, multiple=TRUE, selected=c(1, 2, 3, 4))),
                 conditionalPanel(condition="input.angszeType == '2'",
                                  h4("Input"),
                                  textInput("angszeAng1", h5("Angular size"),
@@ -158,8 +158,8 @@ shinyUI(fluidPage(
                                  selectInput("angszeUnitAng1", h5("Unit angular size"),
                                              choices=unitsAng, selected=1),
                                  h4("Output"),
-                                 selectInput("angszeUnitAbsOut", h5("Unit absolute size"),
-                                             choices=unitsAbs, selected=1)),
+                                 selectizeInput("angszeUnitAbsOut", h5("Unit absolute size"),
+                                                choices=unitsAbs, multiple=TRUE, selected=c(1, 4))),
                 conditionalPanel(condition="input.angszeType == '3'",
                                  h4("Input"),
                                  textInput("angszeAbs2", h5("Absolute size"),
@@ -170,8 +170,8 @@ shinyUI(fluidPage(
                                  selectInput("angszeUnitAng2", h5("Unit angular size"),
                                              choices=unitsAng, selected=1),
                                  h4("Output"),
-                                 selectInput("angszeUnitDstOut", h5("Unit distance"),
-                                             choices=unitsAbs, selected=1))
+                                 selectizeInput("angszeUnitDstOut", h5("Unit distance"),
+                                                choices=unitsAbs, multiple=TRUE, selected=c(1, 4)))
             ),
 
             #####---------------------------------------------------------------
