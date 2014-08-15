@@ -159,7 +159,7 @@ shinyUI(fluidPage(
                                              choices=unitsAng, selected=1),
                                  h4("Output"),
                                  selectizeInput("angszeUnitAbsOut", h5("Unit absolute size"),
-                                                choices=unitsAbs, multiple=TRUE, selected=c(1, 4))),
+                                                choices=unitsAbs, multiple=TRUE, selected=c(2, 6))),
                 conditionalPanel(condition="input.angszeType == '3'",
                                  h4("Input"),
                                  textInput("angszeAbs2", h5("Absolute size"),

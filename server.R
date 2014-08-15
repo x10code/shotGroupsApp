@@ -891,22 +891,25 @@ shinyServer(function(input, output) {
         unitDstOut  <- unitsAbsInv[input$angszeUnitDstOut]
 
         getMOAmult <- function(uao) {
-            getMOA(szeAbs1, dst=dstTrgt,
+            x <- getMOA(szeAbs1, dst=dstTrgt,
                    conversion=paste0(unitDstTrgt, "2", unitAbs1, collapse=""),
                    type=uao)
+            signif(x, 4)
         }
 
         fromMOAmult <- function(uao) {
-            fromMOA(szeAng1, dst=dstTrgt,
+            x <- fromMOA(szeAng1, dst=dstTrgt,
                     conversion=paste0(unitDstTrgt, "2", uao, collapse=""),
                     type=unitAng1)
+            signif(x, 4)
         }
 
         getDistMult <- function(udo) {
-            getDistance(szeAbs2,
+            x <- getDistance(szeAbs2,
                         angular=szeAng2,
                         conversion=paste0(udo, "2", unitAbs2),
                         type=unitAng2)
+            signif(x, 4)
         }
 
         if(input$angszeType == "1") {
