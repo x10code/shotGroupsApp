@@ -1,6 +1,4 @@
 ## TODO
-## CI info in dist to ctr plot
-## CI info for sigmaMRci
 ## compareGroups() -> overflow with horizontal scrollbar
 ## full info for compare groups
 ## or compare groups separately for shape, spread, location
@@ -241,11 +239,7 @@ shinyServer(function(input, output) {
             writeLines(fileName(), con=file)
             out    <- shapeList()
             outSel <- out[shapeOutInv[input$shapeOut]]
-            ## paste CI/CEP level
             outSelNames <- names(outSel)
-            idx         <- outSelNames %in% levelOutComps
-            outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$spreadLevel, "%")
-            outSel <- setNames(outSel, outSelNames)
             Map(textOut, outSel, outSelNames, file)
         },
         contentType='text/plain' # MIME type
@@ -322,7 +316,8 @@ shinyServer(function(input, output) {
         groupSpread(xy,
                     plots=FALSE,
                     CEPtype=CEPtype,
-                    level=input$spreadLevel,
+                    CEPlevel=input$spreadCEPlevel,
+                    CIlevel=input$spreadCIlevel,
                     bootCI=bootCI,
                     dstTarget=as.numeric(input$dstTrgt),
                     conversion=conversionStr())
@@ -334,8 +329,10 @@ shinyServer(function(input, output) {
         outSel <- out[spreadOutInv[input$precisionOut]]
         ## paste CI/CEP level
         outSelNames <- names(outSel)
-        idx         <- outSelNames %in% levelOutComps
-        outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$spreadLevel, "%")
+        idxCEP      <- outSelNames %in% CEPOutComps
+        idxCI       <- outSelNames %in% CIOutComps
+        outSelNames[idxCEP] <- paste0(outSelNames[idxCEP], "_", 100*input$spreadCEPlevel, "%")
+        outSelNames[idxCI]  <- paste0(outSelNames[idxCI],  "_", 100*input$spreadCIlevel,  "%")
         setNames(outSel, outSelNames)
     })
 
@@ -348,8 +345,10 @@ shinyServer(function(input, output) {
             outSel <- out[spreadOutInv[input$precisionOut]]
             ## paste CI/CEP level
             outSelNames <- names(outSel)
-            idx         <- outSelNames %in% levelOutComps
-            outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$spreadLevel, "%")
+            idxCEP      <- outSelNames %in% CEPOutComps
+            idxCI       <- outSelNames %in% CIOutComps
+            outSelNames[idxCEP] <- paste0(outSelNames[idxCEP], "_", 100*input$spreadCEPlevel, "%")
+            outSelNames[idxCI]  <- paste0(outSelNames[idxCI],  "_", 100*input$spreadCIlevel,  "%")
             outSel <- setNames(outSel, outSelNames)
             Map(textOut, outSel, outSelNames, file)
         },
@@ -374,7 +373,8 @@ shinyServer(function(input, output) {
             xy <- coords()
             shotGroups:::groupSpreadPlot(xy,
                 which=localI,
-                level=input$spreadLevel,
+                CEPlevel=input$spreadCEPlevel,
+                CIlevel=input$spreadCIlevel,
                 dstTarget=as.numeric(input$dstTrgt),
                 conversion=conversionStr())
             })
@@ -391,7 +391,8 @@ shinyServer(function(input, output) {
                 for(i in 1:nSpreadPlots) {
                     shotGroups:::groupSpreadPlot(xy,
                         which=i,
-                        level=input$spreadLevel,
+                        CEPlevel=input$spreadCEPlevel,
+                        CIlevel=input$spreadCIlevel,
                         dstTarget=as.numeric(input$dstTrgt),
                         conversion=conversionStr())
                 }
@@ -429,7 +430,7 @@ shinyServer(function(input, output) {
         outSel <- out[locationOutInv[input$locationOut]]
         ## paste CI/CEP level
         outSelNames <- names(outSel)
-        idx         <- outSelNames %in% levelOutComps
+        idx         <- outSelNames %in% CIOutComps
         outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$locLevel, "%")
         setNames(outSel, outSelNames)
     })
@@ -443,8 +444,8 @@ shinyServer(function(input, output) {
             outSel <- out[locationOutInv[input$locationOut]]
             ## paste CI/CEP level
             outSelNames <- names(outSel)
-            idx         <- outSelNames %in% levelOutComps
-            outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$spreadLevel, "%")
+            idx         <- outSelNames %in% CIOutComps
+            outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$locLevel, "%")
             outSel <- setNames(outSel, outSelNames)
             Map(textOut, outSel, outSelNames, file)
         },
@@ -535,7 +536,8 @@ shinyServer(function(input, output) {
 #                       ABalt=c('two.sided', 'less', 'greater'),
 #                       Walt=c('two.sided', 'less', 'greater'),
                       CEPtype=CEPtype,
-                      level=input$compareLevel,
+                      CEPlevel=input$compareCEPlevel,
+                      CIlevel=input$compareCIlevel,
                       conversion=conversionStr())
         list(len=length(groupSel), res=res)
     })
@@ -550,8 +552,10 @@ shinyServer(function(input, output) {
         }
         ## paste CI/CEP level
         outSelNames <- names(outSel)
-        idx         <- outSelNames %in% levelOutComps
-        outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$compareLevel, "%")
+        idxCEP <- outSelNames %in% CEPOutComps
+        idxCI  <- outSelNames %in% CIOutComps
+        outSelNames[idxCEP] <- paste0(outSelNames[idxCEP], "_", 100*input$compareCEPlevel, "%")
+        outSelNames[idxCI]  <- paste0(outSelNames[idxCI],  "_", 100*input$compareCIlevel,  "%")
         setNames(outSel, outSelNames)
     })
 
@@ -569,8 +573,10 @@ shinyServer(function(input, output) {
             }
             ## paste CI/CEP level
             outSelNames <- names(outSel)
-            idx         <- outSelNames %in% levelOutComps
-            outSelNames[idx] <- paste0(outSelNames[idx], "_", 100*input$spreadLevel, "%")
+            idxCEP <- outSelNames %in% CEPOutComps
+            idxCI  <- outSelNames %in% CIOutComps
+            outSelNames[idxCEP] <- paste0(outSelNames[idxCEP], "_", 100*input$compareCEPlevel, "%")
+            outSelNames[idxCI]  <- paste0(outSelNames[idxCI],  "_", 100*input$compareCIlevel,  "%")
             outSel <- setNames(outSel, outSelNames)
             Map(textOut, outSel, outSelNames, file)
         },
@@ -598,7 +604,8 @@ shinyServer(function(input, output) {
             shotGroups:::compareGroupsPlot(xySub,
                 which=localI,
                 xyTopLeft=input$cmpXYTL,
-                level=input$compareLevel,
+                CEPlevel=input$compareCEPlevel,
+                CIlevel=input$compareCIlevel,
                 conversion=conversionStr())
             })
         })
@@ -617,7 +624,8 @@ shinyServer(function(input, output) {
                     shotGroups:::compareGroupsPlot(xySub,
                         which=i,
                         xyTopLeft=input$cmpXYTL,
-                        level=input$compareLevel,
+                          CEPlevel=input$compareCEPlevel,
+                          CIlevel=input$compareCIlevel,
                         conversion=conversionStr())
                 }
                 dev.off()
@@ -645,7 +653,7 @@ shinyServer(function(input, output) {
         if(input$hitpType == 1) {
             ## hit probability -> radius
             x <- getCEP(xy,
-                        level=input$hitpLevel,
+                        CEPlevel=input$hitpLevel,
                         dstTarget=input$dstTrgt,
                         conversion=conversionStr(),
                         accuracy=input$hitpAcc,
@@ -705,7 +713,7 @@ shinyServer(function(input, output) {
         if(input$hitpType == 1) {
             ## hit probability -> radius
             res1 <- getCEP(xy,
-                           level=input$hitpLevel,
+                           CEPlevel=input$hitpLevel,
                            dstTarget=input$dstTrgt,
                            conversion=conversionStr(),
                            accuracy=input$hitpAcc,
