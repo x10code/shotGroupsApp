@@ -1,4 +1,5 @@
 ## TODO
+## save diagrams as zip file with jpegs
 ## compareGroups() -> overflow with horizontal scrollbar
 ## full info for compare groups
 ## or compare groups separately for shape, spread, location
@@ -21,23 +22,23 @@ shinyServer(function(input, output) {
 
         ## isolate against non-applied changes in data input UI elements
         isolate({
-            coordData <- if(input$datIn == '1') {
+            if(input$datIn == '1') {
                 ## built in data
                 get(dataBuiltIn[input$builtInData])
             } else if(input$datIn == '2') {
                 ## upload files
-                if(is.null(input$fileUpload)) {
-                    return(NULL)
-                }
+                if(!is.null(input$fileUpload)) {
+                    fPath <- input$fileUpload$datapath
 
-                fPath <- input$fileUpload$datapath
-
-                if(input$fileType == '1') {          ## OnTarget 1.*
-                    readDataOT1(fPath=dirname(fPath), fNames=basename(fPath))
-                } else if(input$fileType == '2') {   ## OnTarget 2.*, 3.*
-                    readDataOT2(fPath=dirname(fPath), fNames=basename(fPath))
-                } else if(input$fileType == '3') {   ## other
-                    readDataMisc(fPath=dirname(fPath), fNames=basename(fPath))
+                    if(input$fileType == '1') {          ## OnTarget 1.*
+                        readDataOT1(fPath=dirname(fPath), fNames=basename(fPath))
+                    } else if(input$fileType == '2') {   ## OnTarget 2.*, 3.*
+                        readDataOT2(fPath=dirname(fPath), fNames=basename(fPath))
+                    } else if(input$fileType == '3') {   ## other
+                        readDataMisc(fPath=dirname(fPath), fNames=basename(fPath))
+                    }
+                } else {
+                    NULL
                 }
             } else if(input$datIn == '3') {
                 ## paste data
@@ -53,8 +54,6 @@ shinyServer(function(input, output) {
             } else {
                 NULL
             }
-
-            return(coordData)
         })
     })
 
@@ -75,12 +74,7 @@ shinyServer(function(input, output) {
             nlevels(xy$group)
         }
 
-        comment <- if(!is.null(attr(xy, "comment"))) {
-            attr(xy, "comment")
-        } else {
-            NULL
-        }
-
+        comment <- attributes(xy)$comment
         ammo <- if(!is.null(xy$ammunition) && !all(is.na(xy$ammunition)) && !all(xy$ammunition == "")) {
             paste(unique(xy$ammunition), collapse=", ")
         } else {
@@ -185,21 +179,18 @@ shinyServer(function(input, output) {
 
         if(input$task == "Angular size") {
             ## angular size -> dst to target, and unit dst, but not unit xy
-            div(class="row-fluid",
-                div(class="span4", numericInput("dstTrgt", h5("Distance to target"),
-                                                min=0, step=1, value=dstTarget)),
-                div(class="span4", selectInput("unitDst", h5("Measurement unit distance"),
-                                               choices=unitsDst, selected=2)),
-                div(class="span4", h5("")))
+            inputPanel(numericInput("dstTrgt", h5("Distance to target"),
+                                    min=0, step=1, value=dstTarget),
+                       selectInput("unitDst", h5("Measurement unit distance"),
+                                   choices=unitsDst, selected=2))
         } else {
             ## for all except angular size -> dst to target, unit dst, unit xy
-            div(class="row-fluid",
-                div(class="span4", numericInput("dstTrgt", h5("Distance to target"),
-                                                min=0, step=1, value=dstTarget)),
-                div(class="span4", selectInput("unitDst", h5("Measurement unit distance"),
-                                               choices=unitsDst, selected=2)),
-                div(class="span4", selectInput("unitXY", h5("Measurement unit coordinates"),
-                                                   choices=unitsXY, selected=3)))
+            inputPanel(numericInput("dstTrgt", h5("Distance to target"),
+                                    min=0, step=1, value=dstTarget),
+                       selectInput("unitDst", h5("Measurement unit distance"),
+                                   choices=unitsDst, selected=2),
+                       selectInput("unitXY", h5("Measurement unit coordinates"),
+                                   choices=unitsXY, selected=3))
         }
     })
 
@@ -218,12 +209,16 @@ shinyServer(function(input, output) {
     ## output list - reactive conductor
     shapeList <- reactive({
         xy <- coords()
-        groupShape(xy,
-                   plots=FALSE,
-                   dstTarget=input$dstTrgt,
-                   conversion=conversionStr(),
-                   bandW=input$shapeBW,
-                   outlier=c("1"="mcd", "2"="pca")[input$shapeOutlier])
+        if(!is.null(xy)) {
+            groupShape(xy,
+                       plots=FALSE,
+                       dstTarget=input$dstTrgt,
+                       conversion=conversionStr(),
+                       bandW=input$shapeBW,
+                       outlier=c("1"="mcd", "2"="pca")[input$shapeOutlier])
+        } else {
+            NULL
+        }
     })
 
     ## output - only selected list components
@@ -247,7 +242,7 @@ shinyServer(function(input, output) {
 
     ## create diagrams - output UI slots
     output$shapePlot <- renderUI({
-        shapePlotOutL <- lapply(1:nShapePlots, function(i) {
+        shapePlotOutL <- lapply(seq_len(nShapePlots), function(i) {
             plotOutput(paste0("shapePlot", i))
         })
 
@@ -256,17 +251,21 @@ shinyServer(function(input, output) {
     })
 
     ## the actual plots - adapted from Winston Chang https://gist.github.com/wch/5436415
-    for(i in 1:nShapePlots) {
+    for(i in seq_len(nShapePlots)) {
         local({
             localI <- i
             output[[paste0("shapePlot", localI)]] <- renderPlot({
-            xy <- coords()
-            shotGroups:::groupShapePlot(xy,
-                which=localI,
-                dstTarget=input$dstTrgt,
-                conversion=conversionStr(),
-                bandW=input$shapeBW,
-                outlier=c("1"="mcd", "2"="pca")[input$shapeOutlier])
+                xy <- coords()
+                if(!is.null(xy)) {
+                    shotGroups:::groupShapePlot(xy,
+                        which=localI,
+                        dstTarget=input$dstTrgt,
+                        conversion=conversionStr(),
+                        bandW=input$shapeBW,
+                        outlier=c("1"="mcd", "2"="pca")[input$shapeOutlier])
+                } else {
+                    NULL
+                }
             })
         })
     }
@@ -278,7 +277,7 @@ shinyServer(function(input, output) {
             xy <- coords()
             if(!is.null(xy)) {
                 pdf(file)
-                for(i in 1:nShapePlots) {
+                for(i in seq_len(nShapePlots)) {
                     shotGroups:::groupShapePlot(xy,
                         which=i,
                         dstTarget=input$dstTrgt,
@@ -313,14 +312,16 @@ shinyServer(function(input, output) {
         }
 
         xy <- coords()
-        groupSpread(xy,
-                    plots=FALSE,
-                    CEPtype=CEPtype,
-                    CEPlevel=input$spreadCEPlevel,
-                    CIlevel=input$spreadCIlevel,
-                    bootCI=bootCI,
-                    dstTarget=as.numeric(input$dstTrgt),
-                    conversion=conversionStr())
+        if(!is.null(xy)) {
+            groupSpread(xy,
+                        plots=FALSE,
+                        CEPtype=CEPtype,
+                        CEPlevel=input$spreadCEPlevel,
+                        CIlevel=input$spreadCIlevel,
+                        bootCI=bootCI,
+                        dstTarget=as.numeric(input$dstTrgt),
+                        conversion=conversionStr())
+        }
     })
 
     ## output - only selected list components
@@ -366,17 +367,21 @@ shinyServer(function(input, output) {
     })
 
     ## the actual plots - adapted from Winston Chang https://gist.github.com/wch/5436415
-    for(i in 1:nSpreadPlots) {
+    for(i in seq_len(nSpreadPlots)) {
         local({
             localI <- i
             output[[paste0("spreadPlot", localI)]] <- renderPlot({
-            xy <- coords()
-            shotGroups:::groupSpreadPlot(xy,
-                which=localI,
-                CEPlevel=input$spreadCEPlevel,
-                CIlevel=input$spreadCIlevel,
-                dstTarget=as.numeric(input$dstTrgt),
-                conversion=conversionStr())
+                xy <- coords()
+                if(!is.null(xy)) {
+                    shotGroups:::groupSpreadPlot(xy,
+                        which=localI,
+                        CEPlevel=input$spreadCEPlevel,
+                        CIlevel=input$spreadCIlevel,
+                        dstTarget=as.numeric(input$dstTrgt),
+                        conversion=conversionStr())
+                } else {
+                    NULL
+                }
             })
         })
     }
@@ -388,7 +393,7 @@ shinyServer(function(input, output) {
             xy <- coords()
             if(!is.null(xy)) {
                 pdf(file)
-                for(i in 1:nSpreadPlots) {
+                for(i in seq_len(nSpreadPlots)) {
                     shotGroups:::groupSpreadPlot(xy,
                         which=i,
                         CEPlevel=input$spreadCEPlevel,
@@ -416,17 +421,21 @@ shinyServer(function(input, output) {
         }
 
         xy <- coords()
-        groupLocation(xy,
-                      plots=FALSE,
-                      level=input$locLevel,
-                      bootCI=bootCI,
-                      dstTarget=as.numeric(input$dstTrgt),
-                      conversion=conversionStr())
+        if(!is.null(xy)) {
+            groupLocation(xy,
+                          plots=FALSE,
+                          level=input$locLevel,
+                          bootCI=bootCI,
+                          dstTarget=as.numeric(input$dstTrgt),
+                          conversion=conversionStr())
+        } else {
+            NULL
+        }
     })
 
     ## output - only selected list components
     output$location <- renderPrint({
-        out <- locationList()
+        out    <- locationList()
         outSel <- out[locationOutInv[input$locationOut]]
         ## paste CI/CEP level
         outSelNames <- names(outSel)
@@ -455,12 +464,16 @@ shinyServer(function(input, output) {
     ## show diagram
     output$locationPlot <- renderPlot({
         xy <- coords()
-        groupLocation(xy,
-                      plots=TRUE,
-                      level=input$locLevel,
-                      bootCI="none",
-                      dstTarget=as.numeric(input$dstTrgt),
-                      conversion=conversionStr())
+        if(!is.null(xy)) {
+            groupLocation(xy,
+                          plots=TRUE,
+                          level=input$locLevel,
+                          bootCI="none",
+                          dstTarget=as.numeric(input$dstTrgt),
+                          conversion=conversionStr())
+        } else {
+            NULL
+        }
     })
 
     ## save diagram to file
@@ -528,18 +541,22 @@ shinyServer(function(input, output) {
             "CorrNormal"
         }
         xy <- coords()
-        groupSel <- getGroups(xy)[input$compGroupSel]
-        xySub    <- xy[xy$series %in% groupSel , ]
-        res <- compareGroups(xySub,
-                      plots=FALSE,
-                      xyTopLeft=input$cmpXYTL,
-#                       ABalt=c('two.sided', 'less', 'greater'),
-#                       Walt=c('two.sided', 'less', 'greater'),
-                      CEPtype=CEPtype,
-                      CEPlevel=input$compareCEPlevel,
-                      CIlevel=input$compareCIlevel,
-                      conversion=conversionStr())
-        list(len=length(groupSel), res=res)
+        if(!is.null(xy)) {
+            groupSel <- getGroups(xy)[input$compGroupSel]
+            xySub    <- xy[xy$series %in% groupSel , ]
+            res <- compareGroups(xySub,
+                          plots=FALSE,
+                          xyTopLeft=input$cmpXYTL,
+#                          ABalt=c('two.sided', 'less', 'greater'),
+#                          Walt=c('two.sided', 'less', 'greater'),
+                          CEPtype=CEPtype,
+                          CEPlevel=input$compareCEPlevel,
+                          CIlevel=input$compareCIlevel,
+                          conversion=conversionStr())
+            list(len=length(groupSel), res=res)
+        } else {
+            NULL
+        }
     })
 
     ## output - only selected list components
@@ -585,7 +602,7 @@ shinyServer(function(input, output) {
 
     ## create diagrams - output UI slots
     output$comparePlot <- renderUI({
-        comparePlotOutL <- lapply(1:nComparePlots, function(i) {
+        comparePlotOutL <- lapply(seq_len(nComparePlots), function(i) {
             plotOutput(paste0("comparePlot", i))
         })
 
@@ -594,19 +611,23 @@ shinyServer(function(input, output) {
     })
 
     ## the actual plots - adapted from Winston Chang https://gist.github.com/wch/5436415
-    for(i in 1:nComparePlots) {
+    for(i in seq_len(nComparePlots)) {
         local({
             localI <- i
             output[[paste0("comparePlot", localI)]] <- renderPlot({
-            xy <- coords()
-            groupSel <- getGroups(xy)[input$compGroupSel]
-            xySub    <- xy[xy$series %in% groupSel , ]
-            shotGroups:::compareGroupsPlot(xySub,
-                which=localI,
-                xyTopLeft=input$cmpXYTL,
-                CEPlevel=input$compareCEPlevel,
-                CIlevel=input$compareCIlevel,
-                conversion=conversionStr())
+                xy <- coords()
+                if(!is.null(xy)) {
+                    groupSel <- getGroups(xy)[input$compGroupSel]
+                    xySub    <- xy[(xy$series %in% groupSel), ]
+                    shotGroups:::compareGroupsPlot(xySub,
+                        which=localI,
+                        xyTopLeft=input$cmpXYTL,
+                        CEPlevel=input$compareCEPlevel,
+                        CIlevel=input$compareCIlevel,
+                        conversion=conversionStr())
+                } else {
+                    NULL
+                }
             })
         })
     }
@@ -618,14 +639,14 @@ shinyServer(function(input, output) {
             xy <- coords()
             if(!is.null(xy)) {
                 pdf(file)
-                for(i in 1:nComparePlots) {
+                for(i in seq_len(nComparePlots)) {
                     groupSel <- getGroups(xy)[input$compGroupSel]
-                    xySub    <- xy[xy$series %in% groupSel , ]
+                    xySub    <- xy[(xy$series %in% groupSel), ]
                     shotGroups:::compareGroupsPlot(xySub,
                         which=i,
                         xyTopLeft=input$cmpXYTL,
-                          CEPlevel=input$compareCEPlevel,
-                          CIlevel=input$compareCIlevel,
+                        CEPlevel=input$compareCEPlevel,
+                        CIlevel=input$compareCIlevel,
                         conversion=conversionStr())
                 }
                 dev.off()
@@ -642,125 +663,135 @@ shinyServer(function(input, output) {
     ## CEP output list - reactive conductor
     hitProbCEPList <- reactive({
         xy <- coords()
+        if(!is.null(xy)) {
+            ## if no CEP type is selected -> fall back to default CorrNormal
+            CEPtype <- if(!is.null(input$hitpCEPtype)) {
+                CEPtypesInv[input$hitpCEPtype]
+            } else {
+                "CorrNormal"
+            }
 
-        ## if no CEP type is selected -> fall back to default CorrNormal
-        CEPtype  <- if(!is.null(input$hitpCEPtype)) {
-            CEPtypesInv[input$hitpCEPtype]
-        } else {
-            "CorrNormal"
-        }
-
-        if(input$hitpType == 1) {
-            ## hit probability -> radius
-            x <- getCEP(xy,
-                        CEPlevel=input$hitpLevel,
-                        dstTarget=input$dstTrgt,
-                        conversion=conversionStr(),
-                        accuracy=input$hitpAcc,
-                        type=CEPtype,
-                        doRob=input$hitpDoRob)$CEP
-            setNames(list(x), paste0("CEP_", 100*input$hitpLevel, "%"))
-        } else {
-            ## radius -> hit probability
-            x <- getHitProb(xy,
-                            r=input$hitpR,
-                            unit=hitpRUnitInv[[input$hitpUnitR]],
+            if(input$hitpType == 1) {
+                ## hit probability -> radius
+                x <- getCEP(xy,
+                            CEPlevel=input$hitpLevel,
                             dstTarget=input$dstTrgt,
                             conversion=conversionStr(),
                             accuracy=input$hitpAcc,
                             type=CEPtype,
-                            doRob=input$hitpDoRob)
-            setNames(list(x), paste0("hitProbRadius_", input$hitpR))
+                            doRob=input$hitpDoRob)$CEP
+                setNames(list(x), paste0("CEP_", 100*input$hitpLevel, "%"))
+            } else {
+                ## radius -> hit probability
+                x <- getHitProb(xy,
+                                r=input$hitpR,
+                                unit=hitpRUnitInv[[input$hitpUnitR]],
+                                dstTarget=input$dstTrgt,
+                                conversion=conversionStr(),
+                                accuracy=input$hitpAcc,
+                                type=CEPtype,
+                                doRob=input$hitpDoRob)
+                setNames(list(x), paste0("hitProbRadius_", input$hitpR))
+            }
+        } else {
+            NULL
         }
     })
 
     ## confidence ellipse output list - reactive conductor
     hitProbConfEllList <- reactive({
         xy <- coords()
-        res <- if(input$hitpType == 1) {
-            ## hit probability -> radius
-            getConfEll(xy,
-                       level=input$hitpLevel,
-                       dstTarget=input$dstTrgt,
-                       conversion=conversionStr(),
-                       doRob=input$hitpDoRob)
+        if(!is.null(xy)) {
+            res <- if(input$hitpType == 1) {
+                ## hit probability -> radius
+                getConfEll(xy,
+                           level=input$hitpLevel,
+                           dstTarget=input$dstTrgt,
+                           conversion=conversionStr(),
+                           doRob=input$hitpDoRob)
+            } else {
+                ## radius -> hit probability
+                NULL
+            }
+
+            x <- if(input$hitpDoRob) {
+                list(confEllSizeRobust=res$sizeRob, confEllShapeRobust=res$shapeRob)
+            } else {
+                list(confEllSize=res$size, confEllShape=res$shape)
+            }
+
+            outNames <- paste0(names(x), "_", 100*input$hitpLevel, "%")
+            setNames(x, outNames)
         } else {
-            ## radius -> hit probability
             NULL
         }
-
-        x <- if(input$hitpDoRob) {
-            list(confEllSizeRobust=res$sizeRob, confEllShapeRobust=res$shapeRob)
-        } else {
-            list(confEllSize=res$size, confEllShape=res$shape)
-        }
-
-        outNames <- paste0(names(x), "_", 100*input$hitpLevel, "%")
-        setNames(x, outNames)
     })
 
     ## extrapolation to different distance output list
     hitProbExtraList <- reactive({
         xy <- coords()
-
-        ## if no CEP type is selected -> fall back to default CorrNormal
-        CEPtype  <- if(!is.null(input$hitpCEPtype)) {
-            CEPtypesInv[input$hitpCEPtype]
-        } else {
-            "CorrNormal"
-        }
-
-        if(input$hitpType == 1) {
-            ## hit probability -> radius
-            res1 <- getCEP(xy,
-                           CEPlevel=input$hitpLevel,
-                           dstTarget=input$dstTrgt,
-                           conversion=conversionStr(),
-                           accuracy=input$hitpAcc,
-                           type=CEPtype,
-                           doRob=input$hitpDoRob)$CEP["MOA", , drop=FALSE]
-
-            res2 <- getConfEll(xy,
-                               level=input$hitpLevel,
-                               dstTarget=input$dstTrgt,
-                               conversion=conversionStr(),
-                               doRob=input$hitpDoRob)
-
-            res3 <- if(input$hitpDoRob) {
-                res2$sizeRob["MOA", , drop=FALSE]
+        if(!is.null(xy)) {
+            ## if no CEP type is selected -> fall back to default CorrNormal
+            CEPtype <- if(!is.null(input$hitpCEPtype)) {
+                CEPtypesInv[input$hitpCEPtype]
             } else {
-                res2$size["MOA", , drop=FALSE]
+                "CorrNormal"
             }
 
-            CEP <- fromMOA(res1,
-                           dst=input$hitpExtraDst,
-                           conversion=paste0(unitsDstInv[input$hitpUnitExtraDst], "2",
-                                             unitsXYInv[input$unitXY], collapse=""))
-            ConfEll <- fromMOA(res3,
+            if(input$hitpType == 1) {
+                ## hit probability -> radius
+                res1 <- getCEP(xy,
+                               CEPlevel=input$hitpLevel,
+                               dstTarget=input$dstTrgt,
+                               conversion=conversionStr(),
+                               accuracy=input$hitpAcc,
+                               type=CEPtype,
+                               doRob=input$hitpDoRob)$CEP["MOA", , drop=FALSE]
+
+                res2 <- getConfEll(xy,
+                                   level=input$hitpLevel,
+                                   dstTarget=input$dstTrgt,
+                                   conversion=conversionStr(),
+                                   doRob=input$hitpDoRob)
+
+                res3 <- if(input$hitpDoRob) {
+                    res2$sizeRob["MOA", , drop=FALSE]
+                } else {
+                    res2$size["MOA", , drop=FALSE]
+                }
+
+                CEP <- fromMOA(res1,
                                dst=input$hitpExtraDst,
                                conversion=paste0(unitsDstInv[input$hitpUnitExtraDst], "2",
                                                  unitsXYInv[input$unitXY], collapse=""))
-            rownames(CEP)     <- "unit"
-            rownames(ConfEll) <- "unit"
-            x <- list(CEP=CEP, ConfEll=ConfEll)
-            setNames(x, paste0(names(x), "_", 100*input$hitpLevel, "%", "_@",
-                               input$hitpExtraDst, unitsDstInv[input$hitpUnitExtraDst]))
+                ConfEll <- fromMOA(res3,
+                                   dst=input$hitpExtraDst,
+                                   conversion=paste0(unitsDstInv[input$hitpUnitExtraDst], "2",
+                                                     unitsXYInv[input$unitXY], collapse=""))
+                rownames(CEP)     <- "unit"
+                rownames(ConfEll) <- "unit"
+                x <- list(CEP=CEP, ConfEll=ConfEll)
+                setNames(x, paste0(names(x), "_", 100*input$hitpLevel, "%", "_@",
+                                   input$hitpExtraDst, unitsDstInv[input$hitpUnitExtraDst]))
+            } else {
+                ## radius -> hit probability
+                MOA <- getMOA(input$hitpR,
+                              dst=input$hitpExtraDst,
+                              conversion=paste0(unitsDstInv[input$hitpUnitExtraDst], "2",
+                                                unitsXYInv[input$unitXY], collapse=""))
+                x <- getHitProb(xy,
+                                r=MOA,
+                                unit="MOA",
+                                dstTarget=input$dstTrgt,
+                                conversion=conversionStr(),
+                                accuracy=input$hitpAcc,
+                                type=CEPtype,
+                                doRob=input$hitpDoRob)
+                setNames(list(x), paste0("hitProbRadius_", input$hitpR, "_@",
+                                         input$hitpExtraDst, unitsDstInv[input$hitpUnitExtraDst]))
+            }
         } else {
-            ## radius -> hit probability
-            MOA <- getMOA(input$hitpR,
-                          dst=input$hitpExtraDst,
-                          conversion=paste0(unitsDstInv[input$hitpUnitExtraDst], "2",
-                                            unitsXYInv[input$unitXY], collapse=""))
-            x <- getHitProb(xy,
-                            r=MOA,
-                            unit="MOA",
-                            dstTarget=input$dstTrgt,
-                            conversion=conversionStr(),
-                            accuracy=input$hitpAcc,
-                            type=CEPtype,
-                            doRob=input$hitpDoRob)
-            setNames(list(x), paste0("hitProbRadius_", input$hitpR, "_@",
-                                     input$hitpExtraDst, unitsDstInv[input$hitpUnitExtraDst]))
+            NULL
         }
     })
 
@@ -789,10 +820,10 @@ shinyServer(function(input, output) {
             out3 <- hitProbExtraList()
             if(input$hitpType == 1) {
                 ## hit probability -> radius
-                out  <- c(out1, out2, out3)
+                out <- c(out1, out2, out3)
             } else {
                 ## radius -> hit probability - no confidence ellipse
-                out  <- c(out1, out3)
+                out <- c(out1, out3)
             }
             Map(textOut, out, names(out), file)
         },
@@ -833,13 +864,17 @@ shinyServer(function(input, output) {
     ## simulated ring count output
     output$simRingCount <- renderPrint({
         xy <- coords()
-        if(grepl("DSU[ab][[:digit:]]+", targetLinv[[input$trgtTarget]])) {
-            "Simulated ring count is not yet available for oval DSU targets"
-        } else if(!is.null(xy) && (input$trgtTarget != "1")) {
-            simRingCount(xy,
-                         caliber=input$trgtCaliber,
-                         unit=unitsXYInv[input$unitXY],
-                         target=targetLinv[[input$trgtTarget]])
+        if(!is.null(xy)) {
+            if(grepl("DSU[ab][[:digit:]]+", targetLinv[[input$trgtTarget]])) {
+                "Simulated ring count is not yet available for oval DSU targets"
+            } else if(input$trgtTarget != "1") {
+                simRingCount(xy,
+                             caliber=input$trgtCaliber,
+                             unit=unitsXYInv[input$unitXY],
+                             target=targetLinv[[input$trgtTarget]])
+            } else {
+                NULL
+            }
         } else {
             NULL
         }

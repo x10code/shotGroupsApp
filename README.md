@@ -5,4 +5,6 @@ This is a [`shiny`](http://shiny.rstudio.com/)-based web application that implem
 
 [dwoll.shinyapps.io/shotGroupsApp](http://dwoll.shinyapps.io/shotGroupsApp/)
 
+Tested with shiny 0.11 (Bootstrap 3)
+
 Daniel Wollschlaeger

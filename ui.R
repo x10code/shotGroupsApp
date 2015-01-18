@@ -386,11 +386,11 @@ shinyUI(fluidPage(
                       statistically describe, analyze, and compare shooting data with respect
                       to group shape, precision, and accuracy. This includes graphical methods,
                       descriptive statistics, and inference tests using standard, but also
-                      nonparametric and robust statistical methods. The data can be imported
+                      non-parametric and robust statistical methods. The data can be imported
                       from files produced by", a("OnTarget PC and OnTarget TDS",
                                                  href="http://ontargetshooting.com/tds/"),
                       "or from custom data files in text format with a similar structure.
-                      For further explanantions and an example walkthrough, see the",
+                      For further explanations and an example walkthrough, see the",
                       a("package vignette",
                         href="http://cran.rstudio.com/web/packages/shotGroups/vignettes/shotGroups.pdf"),
                       ". Many statistical methods are described on",
