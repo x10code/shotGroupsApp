@@ -40,10 +40,10 @@ hitpRUnitInv <- as.list(c("unit", hitpRUnits[-1]))
 hitpRUnitInv <- setNames(hitpRUnitInv, seq_along(hitpRUnit))
 
 CEPtypes <- c("Correlated Normal"="1", "Grubbs-Pearson"="2", "Grubbs-Patnaik"="3",
-              "Grubbs-Liu"="4", "Rayleigh"="5", "Ethridge"="6", "RAND-234"="7")
+              "Grubbs-Liu"="4", "Rayleigh"="5", "Krempasky"="6", "Ethridge"="7", "RAND-234"="8")
 
 CEPtypesInv <- c("1"="CorrNormal", "2"="GrubbsPearson", "3"="GrubbsPatnaik",
-                 "4"="GrubbsLiu", "5"="Rayleigh", "6"="Ethridge", "7"="RAND")
+                 "4"="GrubbsLiu", "5"="Rayleigh", "6"="Krempasky", "7"="Ethridge", "8"="RAND")
 
 CItypes    <- c("basic"="1", "percentile"="2", "BCa"="3", "normal"="4")
 CItypesInv <- c("1"="basic", "2"="perc", "3"="bca", "4"="norm")
